@@ -1,11 +1,15 @@
 // swagger/servers.js
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 const basePath = 'api';
 const versionsApi = ['v1'];
+const port = process.env.PORT || 3000;
 
 const servers = [
     {
-        url: "http://localhost:3000/{basePath}/{versionApi}",
+        url: `http://localhost:${port}/${basePath}/${versionsApi}`,
         description: "Local server",
         variables: {
             basePath: {
