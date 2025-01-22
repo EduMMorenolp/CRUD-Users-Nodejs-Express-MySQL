@@ -7,11 +7,6 @@ export const createUserModel = async (username, email, password) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
-        // Verificar si el correo ya está en uso
-        const [existingUser] = await connection.execute('SELECT * FROM users WHERE email = ?', [email]);
-        if (existingUser.length > 0) {
-            throw new Error('El correo electrónico ya está en uso');
-        }
         const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
         const [result] = await connection.execute(query, [username, email, password]);
         await connection.commit();
