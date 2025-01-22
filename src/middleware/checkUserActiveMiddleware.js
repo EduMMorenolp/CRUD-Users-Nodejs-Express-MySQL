@@ -1,16 +1,17 @@
 import { checkUserActive } from '../models/MySQL/userModel.js'
+import { CustomError } from '../utils/CustomError.js';
 
 // Verificar si el usuario está activo
 export const checkUserActiveMiddleware = async (req, res, next) => {
-    const userId = req.userId; // Suponiendo que el userId ya está disponible desde el token
+    const userId = req.userId;
     try {
         const isActive = await checkUserActive(userId);
         if (!isActive) {
-            return res.status(403).json({ message: 'Usuario inactivo. Acceso denegado.' });
+            throw new CustomError('Usuario inactivo. Acceso denegado.', 403);
         }
-        next(); // Si está activo, pasa al siguiente middleware o controlador
+        next();
     } catch (error) {
         console.error('Error al verificar el estado del usuario:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        next(error)
     }
 };
