@@ -36,9 +36,17 @@ export const getUserByEmail = async (email) => {
 export const logoutUserModel = async (userId, state) => {
     const connection = await pool.getConnection();
     try {
+        // Verificar el estado actual del usuario
+        const [user] = await connection.execute('SELECT is_active FROM users WHERE id = ?', [userId]);
+        // Si el usuario no existe o el estado ya es el mismo, no hacer nada
+        console.log(user)
+        if (!user.length || user[0].is_active === (state ? 1 : 0)) {
+            return false; // Retorna false si no se hizo ninguna actualización
+        }
+        // Actualizar el estado del usuario
         const query = 'UPDATE users SET is_active = ? WHERE id = ?';
         const [result] = await connection.execute(query, [state, userId]);
-        return result.affectedRows > 0; // Retorna true si se actualizó algo
+        return result.affectedRows > 0;
     } catch (error) {
         console.error('Error al actualizar el estado del usuario:', error.message);
         throw error;
